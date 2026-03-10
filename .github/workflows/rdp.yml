@@ -1,4 +1,3 @@
-#.github/workflows/main.yml
 name: Windows - Ngrok
 
 on: workflow_dispatch
@@ -42,11 +41,11 @@ jobs:
         w32tm /config /manualpeerlist:"time.windows.com" /syncfromflags:manual /reliable:yes /update *>$null
         
         diskperf -Y *>$null
-        "$env:TEMP\*" | Remove-Item -Recurse -Force
-        "C:\Windows\Temp\*" | Remove-Item -Recurse -Force
-        "C:\Windows\Prefetch\*" | Remove-Item -Recurse -Force
-        "C:\Users\Public\Desktop\*" | Remove-Item -Recurse -Force
-        (New-Object -ComObject Shell.Application).Namespace(0xA).Items() | %{Remove-Item $_.Path -Recurse -Confirm:$false}
+        "$env:TEMP\*" | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+        "C:\Windows\Temp\*" | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+        "C:\Windows\Prefetch\*" | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+        "C:\Users\Public\Desktop\*" | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+        (New-Object -ComObject Shell.Application).Namespace(0xA).Items() | %{Remove-Item $_.Path -Recurse -Confirm:$false -ErrorAction SilentlyContinue}
         (New-Object -ComObject Shell.Application).minimizeall()
         
     - name: Install and Configure Ngrok
@@ -112,8 +111,8 @@ jobs:
         
     - name: Keep Alive
       run: |
-        $duration = 21600  # 6 hours in seconds
-        $interval = 300    # Check every 5 minutes
+        $duration = 21600
+        $interval = 300
         $endTime = (Get-Date).AddSeconds($duration)
 
         while ((Get-Date) -lt $endTime) {
